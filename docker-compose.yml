@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15
+    container_name: "db"
+    environment:
+      - POSTGRES_PASSWORD=babyshark
+      - POSTGRES_USER=app
+      - POSTGRES_DB=app
+    expose:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "psql -U app -d app -c 'SELECT 1' || exit 1"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s  
+
+
+  adminer:
+    image: adminer
+    container_name: db_admin
+    restart: always
+    ports:
+      - 8080:8080
+
+  api:
+    container_name: api
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - 8000:8000
+
+  frontend:
+    container_name: ui
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 5173:5173
