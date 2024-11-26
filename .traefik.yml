@@ -21,18 +21,4 @@ providers:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
   file:
-    directory: "/etc/traefik/traefik.yml"
 
-http:
-  routers:
-    api:
-      entrypoints:
-        - "web"
-      rule: "PathPrefix(`/docs`)"
-      service: api
-
-services:
-  api:
-    loadBalancer:
-      servers:
-        - url: "http://localhost:8000/docs"
